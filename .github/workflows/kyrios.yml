@@ -4,6 +4,8 @@ on: push
 
 jobs:
   build:
+    env:
+      SHORT_SHA: ${GITHUB_SHA::7}
     name: Build Image
     runs-on: ubuntu-latest
     steps:
@@ -48,7 +50,16 @@ jobs:
       - name: Update yaml
         uses: docker://ryanlime/kyriosctl:v0.0.42
         with:
-          args: gitops updateTag -t ${{ steps.docker_meta.outpus.tags[1] }}
+          args: gitops updateTag -t ${{ steps.docker_meta.outputs.tags[1] }}
+      - name: Commit files
+        run: |
+          git config --local user.email "ryan@ryanli.me"
+          git config --local user.name "Kyrios Bot"
+          git commit -a -m "[release][dev] $SHORT_SHA" -m "{{workflow.parameters.commit_url}}"
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
 
 
 

@@ -38,10 +38,10 @@ jobs:
           labels: ${{ steps.docker_meta.outputs.labels }}
   deploy:
     name: Deploy with GitOps
-    env:
-      SHORT_SHA: ${GITHUB_SHA::7}
     runs-on: ubuntu-latest
     needs: build
+    envs:
+      GITOPS_REPO: kyriosproj/example-golang-gitops
     steps:
       - name: Get short SHA
         id: slug
@@ -49,7 +49,7 @@ jobs:
       - name: Checkout Gitops code
         uses: actions/checkout@v2
         with:
-          repository: kyriosproj/example-golang-gitops
+          repository: $GITOPS_REPO
       - name: Update yaml
         uses: docker://ryanlime/kyriosctl:v0.0.42
         with:
@@ -58,11 +58,12 @@ jobs:
         run: |
           git config --local user.email "ryan@ryanli.me"
           git config --local user.name "Kyrios Bot"
-          git commit -a -m "[release][dev] ${{ steps.slug.outputs.sha7 }}" -m "{{workflow.parameters.commit_url}}"
+          git commit -a -m "[release][dev] ${{ steps.slug.outputs.sha7 }}" -m "https://github.com/{{github.repository}}/commit/{{github.sha}}"
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          repository: $GITOPS_REPO
 
 
 

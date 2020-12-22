@@ -1,0 +1,17 @@
+name: kyrios
+
+on: push
+
+jobs:
+  kyrios:
+    name: Kyrios CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Inject Dockerfile
+        uses: docker://ryanlime/kyriosctl:v0.0.32
+        with:
+          args: docker inject -lgolang
+

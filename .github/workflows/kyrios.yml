@@ -14,4 +14,12 @@ jobs:
         uses: docker://ryanlime/kyriosctl:v0.0.32
         with:
           args: docker inject -lgolang
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: kyriosproj/example-golang/example-golang
+          tag_with_ref: true
 

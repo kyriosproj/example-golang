@@ -51,7 +51,7 @@ jobs:
         with:
           repository: ${{ env.GITOPS_REPO }}
           persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
-          fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
+          fetch-depth: 1 # use 0 if later pushing to different branch
       - name: Update yaml
         uses: docker://ryanlime/kyriosctl:v0.0.42
         with:
@@ -60,12 +60,13 @@ jobs:
         run: |
           git config --local user.email "ryan@ryanli.me"
           git config --local user.name "Kyrios Bot"
-          git commit -a -m "[release][dev] ${{ steps.slug.outputs.sha7 }}" -m "https://github.com/{{github.repository}}/commit/{{github.sha}}"
+          git commit -a -m "[release][dev] ${{ steps.slug.outputs.sha7 }}" -m "https://github.com/${{github.repository}}/commit/${{github.sha}}"
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITOPS_REPO_PAT }}
           repository: ${{ env.GITOPS_REPO }}
+          branch: main
 
 
 
